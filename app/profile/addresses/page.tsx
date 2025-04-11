@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { Address } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
+import Input from '@/components/ui/Input';
 
 export default function AddressesPage() {
   const { user } = useAuth();
@@ -16,7 +17,10 @@ export default function AddressesPage() {
   const [formData, setFormData] = useState({
     title: '',
     addressLine: '',
+    addressLine2: '',
     city: '',
+    state: '',
+    country: '',
     postalCode: '',
     isDefault: false,
   });
@@ -69,9 +73,12 @@ export default function AddressesPage() {
           {
             user_id: user?.id,
             title: formData.title,
-            address_line: formData.addressLine,
+            address_line1: formData.addressLine,
+            address_line2: formData.addressLine2,
             city: formData.city,
+            state: formData.state,
             postal_code: formData.postalCode,
+            country: formData.country,
             is_default: formData.isDefault,
           },
         ]);
@@ -81,7 +88,10 @@ export default function AddressesPage() {
       setFormData({
         title: '',
         addressLine: '',
+        addressLine2: '',
         city: '',
+        state: '',
+        country: '',
         postalCode: '',
         isDefault: false,
       });
@@ -147,7 +157,7 @@ export default function AddressesPage() {
           <h1 className="text-3xl font-bold">Adreslerim</h1>
           <button
             onClick={() => setShowAddForm(!showAddForm)}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+            className={`px-4 py-2 border border-gray-300 rounded-md cursor-pointer ${showAddForm ? 'text-gray-700' : 'bg-emerald-600 text-white hover:bg-emerald-700'}`}
           >
             {showAddForm ? 'İptal' : 'Yeni Adres Ekle'}
           </button>
@@ -163,50 +173,60 @@ export default function AddressesPage() {
           <div className="bg-white rounded-lg shadow p-6 mb-8">
             <h2 className="text-xl font-semibold mb-4">Yeni Adres Ekle</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Adres Başlığı</label>
-                <input
+              <Input
+                label="Adres Başlığı"
+                type="text"
+                required
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                placeholder="Ev, İş vb."
+              />
+              <Input
+                label="Adres"
+                type="text"
+                required
+                value={formData.addressLine}
+                onChange={(e) => setFormData({ ...formData, addressLine: e.target.value })}
+                placeholder="Sokak, Mahalle, Bina No"
+              />
+              <Input
+                label="Adres Detayı"
+                type="text"
+                required
+                value={formData.addressLine2}
+                onChange={(e) => setFormData({ ...formData, addressLine2: e.target.value })} 
+                placeholder="Apartman, Daire No"
+              />
+              <div className="grid grid-cols-2 gap-4">
+                <Input
+                  label="Şehir"
                   type="text"
                   required
-                  value={formData.title}
-                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  placeholder="Ev, İş vb."
+                  value={formData.city}
+                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                 />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Adres</label>
-                <textarea
+                <Input
+                  label="İlçe"
+                  type="text"
                   required
-                  value={formData.addressLine}
-                  onChange={(e) => setFormData({ ...formData, addressLine: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  rows={3}
-                  placeholder="Sokak, Mahalle, Bina No"
+                  value={formData.state}
+                  onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+                />
+                <Input
+                  label="Posta Kodu"
+                  type="text"
+                  required
+                  value={formData.postalCode}
+                  onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Şehir</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.city}
-                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Posta Kodu</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.postalCode}
-                    onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
+              <Input
+                label="Ülke"
+                type="text"
+                required
+                value={formData.country}
+                onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+              />
               <div className="flex items-center">
                 <input
                   type="checkbox"
@@ -222,7 +242,7 @@ export default function AddressesPage() {
               <div className="flex justify-end">
                 <button
                   type="submit"
-                  className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+                  className="bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700 cursor-pointer"
                 >
                   Kaydet
                 </button>
@@ -246,20 +266,21 @@ export default function AddressesPage() {
                   </span>
                 )}
                 <h3 className="font-semibold text-lg">{address.title}</h3>
-                <p className="text-gray-600 mt-2">{address.address_line}</p>
-                <p className="text-gray-600">{address.city} - {address.postal_code}</p>
+                <p className="text-gray-600 mt-2">{address.address_line1}</p>
+                <p className="text-gray-600 mt-2">{address.address_line2}</p>
+                <p className="text-gray-600">{address.city} - {address.state} - {address.country} - {address.postal_code}</p>
                 <div className="mt-4 flex justify-end space-x-3">
                   {!address.is_default && (
                     <button
                       onClick={() => handleSetDefault(address.id)}
-                      className="text-blue-600 hover:text-blue-800"
+                      className="text-blue-600 hover:text-blue-800 cursor-pointer font-semibold"
                     >
                       Varsayılan Yap
                     </button>
                   )}
                   <button
                     onClick={() => handleDelete(address.id)}
-                    className="text-red-600 hover:text-red-800"
+                    className="text-red-600 hover:text-red-800 cursor-pointer font-semibold"
                   >
                     Sil
                   </button>
