@@ -12,6 +12,16 @@ export const supabase = createBrowserClient(
 );
 
 // Types for our Supabase tables
+export type Category = {
+  id: string;
+  name: string;
+  name_tr: string;
+  slug: string;
+  parent_id: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 export type Profile = {
   id: string;
   email: string;
@@ -23,10 +33,12 @@ export type Profile = {
 export type Product = {
   id: string;
   name: string;
+  name_tr: string;
   description: string;
+  description_tr: string;
   price: number;
   image_url: string;
-  category: string;
+  category_id: string;
   stock_quantity: number;
   created_at: string;
 };

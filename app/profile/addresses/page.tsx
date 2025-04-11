@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 import { Address } from '@/lib/supabase';
@@ -21,21 +21,14 @@ export default function AddressesPage() {
     isDefault: false,
   });
 
-  useEffect(() => {
-    if (!user) {
-      router.push('/auth/login');
-      return;
-    }
-
-    fetchAddresses();
-  }, [user, router]);
-
-  const fetchAddresses = async () => {
+  const fetchAddresses = useCallback(async () => {
+    if (!user) return;
+    
     try {
       const { data, error } = await supabase
         .from('addresses')
         .select('*')
-        .eq('user_id', user?.id)
+        .eq('user_id', user.id)
         .order('is_default', { ascending: false });
 
       if (error) throw error;
@@ -46,7 +39,16 @@ export default function AddressesPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
+
+  useEffect(() => {
+    if (!user) {
+      router.push('/auth/login');
+      return;
+    }
+
+    fetchAddresses();
+  }, [user, router, fetchAddresses]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
