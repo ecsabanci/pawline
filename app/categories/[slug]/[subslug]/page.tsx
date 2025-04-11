@@ -3,15 +3,12 @@ import { createServerSupabaseClient } from '@/lib/supabase.server';
 import { notFound } from 'next/navigation';
 import ProductGrid from '@/components/ProductGrid';
 
-interface PageProps {
-  params: {
-    slug: string;
-    subslug: string;
-  };
-}
-
-export default async function SubCategoryPage({ params }: PageProps) {
-  const { slug, subslug } = params;
+export default async function SubCategoryPage({
+  params,
+}: {
+  params: { [key: string]: string | string[] }
+}) {
+  const { slug, subslug } = params as { slug: string; subslug: string };
   const supabase = createServerSupabaseClient();
 
   // Fetch parent category

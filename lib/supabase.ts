@@ -41,6 +41,7 @@ export type Product = {
   category_id: string;
   stock_quantity: number;
   created_at: string;
+  discount_rate: number | null;
 };
 
 export type Order = {
