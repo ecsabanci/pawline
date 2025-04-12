@@ -47,9 +47,11 @@ export type Product = {
 export type Order = {
   id: string;
   user_id: string;
-  total_amount: number;
   status: string;
+  total_amount: number;
+  shipping_address_id: string;
   created_at: string;
+  updated_at: string;
 };
 
 export type OrderItem = {

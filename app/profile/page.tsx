@@ -9,8 +9,10 @@ import clsx from 'clsx';
 import ProfileInfo from '@/components/profile/ProfileInfo';
 import AddressList from '@/components/profile/AddressList';
 import OrderList from '@/components/profile/OrderList';
+import FavoriteList from '@/components/profile/FavoriteList';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
-type TabType = 'profile' | 'addresses' | 'orders';
+type TabType = 'profile' | 'addresses' | 'orders' | 'favorites';
 
 export default function ProfilePage() {
   const { user } = useAuth();
@@ -72,19 +74,14 @@ export default function ProfilePage() {
   }, [user, router]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-gray-600">Yükleniyor...</div>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner fullScreen />;
   }
 
   const tabs = [
     { id: 'profile', label: 'Profil Bilgileri' },
     { id: 'addresses', label: 'Adreslerim' },
     { id: 'orders', label: 'Siparişlerim' },
+    { id: 'favorites', label: 'Favorilerim' },
   ] as const;
 
   return (
@@ -124,6 +121,7 @@ export default function ProfilePage() {
             {activeTab === 'profile' && <ProfileInfo profile={profile} userId={user?.id || ''} />}
             {activeTab === 'addresses' && <AddressList addresses={addresses} />}
             {activeTab === 'orders' && <OrderList orders={orders} />}
+            {activeTab === 'favorites' && <FavoriteList userId={user?.id || ''} />}
           </div>
         </div>
       </div>

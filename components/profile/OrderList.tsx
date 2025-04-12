@@ -1,6 +1,7 @@
 'use client';
 
 import { Order } from '@/lib/supabase';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 interface OrderListProps {
   orders: Order[];

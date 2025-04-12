@@ -68,7 +68,7 @@ export default function CartPage() {
                   </select>
                   <button
                     onClick={() => dispatch(removeFromCart(item.id))}
-                    className="text-red-600 hover:text-red-800"
+                    className="text-red-600 hover:text-red-800 cursor-pointer font-semibold"
                   >
                     Kaldır
                   </button>
@@ -102,7 +102,7 @@ export default function CartPage() {
             </div>
             <Link
               href="/checkout"
-              className="block w-full bg-blue-600 text-white text-center py-3 rounded-lg hover:bg-blue-700 transition-colors"
+              className="block w-full bg-emerald-600 text-white text-center py-3 rounded-lg hover:bg-emerald-700 transition-colors cursor-pointer"
             >
               Ödemeye Geç
             </Link>
