@@ -11,6 +11,7 @@ import AddressList from '@/components/profile/AddressList';
 import OrderList from '@/components/profile/OrderList';
 import FavoriteList from '@/components/profile/FavoriteList';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import Button from '@/components/ui/Button';
 
 type TabType = 'profile' | 'addresses' | 'orders' | 'favorites';
 
@@ -94,18 +95,20 @@ export default function ProfilePage() {
           <div className="md:w-64 flex-shrink-0">
             <nav className="space-y-1">
               {tabs.map((tab) => (
-                <button
+                <Button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
+                  variant={activeTab === tab.id ? 'primary' : 'outline'}
+                  fullWidth
                   className={clsx(
-                    'w-full flex items-center px-4 py-3 text-left rounded-lg transition-all duration-300 cursor-pointer',
+                    'justify-start',
                     activeTab === tab.id
-                      ? 'bg-pink-50 text-pink-700 font-medium'
-                      : 'text-gray-700 hover:bg-gray-50'
+                      ? 'bg-pink-50 text-pink-700 hover:bg-pink-100 border-pink-100'
+                      : 'hover:bg-gray-50'
                   )}
                 >
                   {tab.label}
-                </button>
+                </Button>
               ))}
             </nav>
           </div>

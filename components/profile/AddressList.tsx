@@ -2,6 +2,7 @@
 
 import { Address } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
+import Button from '@/components/ui/Button';
 
 interface AddressListProps {
   addresses: Address[];
@@ -14,12 +15,12 @@ export default function AddressList({ addresses }: AddressListProps) {
     <div className="bg-white rounded-lg p-6 pt-0">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold">Adreslerim</h2>
-        <button
+        <Button
           onClick={() => router.push('/profile/addresses')}
-          className="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 cursor-pointer"
+          variant="secondary"
         >
           Yeni Adres Ekle
-        </button>
+        </Button>
       </div>
 
       {addresses.length === 0 ? (

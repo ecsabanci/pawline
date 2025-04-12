@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Profile } from '@/lib/supabase';
 import { supabase } from '@/lib/supabase';
 import Input from '@/components/ui/Input';
+import Button from '@/components/ui/Button';
 
 interface ProfileInfoProps {
   profile: Profile | null;
@@ -70,31 +71,31 @@ export default function ProfileInfo({ profile, userId }: ProfileInfoProps) {
             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
           />
           <div className="flex justify-end space-x-3">
-            <button
+            <Button
               type="button"
               onClick={() => setEditMode(false)}
-              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 cursor-pointer"
+              variant="outline"
             >
               İptal
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
-              className="px-4 py-2 bg-emerald-600 text-white rounded-md hover:bg-emerald-700 cursor-pointer"
+              variant="secondary"
             >
               Kaydet
-            </button>
+            </Button>
           </div>
         </form>
       ) : (
         <div className="space-y-4">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-xl font-semibold">Profil Bilgileri</h2>
-            <button
+            <Button
               onClick={() => setEditMode(true)}
-              className="text-gray-600 hover:text-gray-800 cursor-pointer font-semibold"
+              variant="outline"
             >
               Düzenle
-            </button>
+            </Button>
           </div>
           <div className="space-y-3">
             <div className="flex pb-5">

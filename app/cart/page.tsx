@@ -5,7 +5,7 @@ import { RootState } from '@/store';
 import { removeFromCart, updateQuantity } from '@/store/features/cartSlice';
 import Image from 'next/image';
 import Link from 'next/link';
-
+import Button from '@/components/ui/Button';
 export default function CartPage() {
   const dispatch = useDispatch();
   const cartItems = useSelector((state: RootState) => state.cart.items);
@@ -66,12 +66,12 @@ export default function CartPage() {
                       </option>
                     ))}
                   </select>
-                  <button
+                  <Button
+                    variant="danger"
                     onClick={() => dispatch(removeFromCart(item.id))}
-                    className="text-red-600 hover:text-red-800 cursor-pointer font-semibold"
                   >
                     Kaldır
-                  </button>
+                  </Button>
                 </div>
               </div>
               <div className="text-right">

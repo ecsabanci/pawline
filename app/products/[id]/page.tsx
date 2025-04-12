@@ -1,17 +1,14 @@
-'use client';
-
 import { createServerSupabaseClient } from '@/lib/supabase.server';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import AddToCartButton from '@/components/AddToCartButton';
 import FavoriteButton from '@/components/ui/FavoriteButton';
-import { Product } from '@/lib/supabase';
 
-export const revalidate = 3600;
-
-const supabase = createServerSupabaseClient();
+export const revalidate = 3600; // 1 saat
 
 async function getProduct(id: string) {
+  const supabase = createServerSupabaseClient();
+  
   const { data: product, error } = await supabase
     .from('products')
     .select('*')
@@ -26,8 +23,7 @@ async function getProduct(id: string) {
 }
 
 export default async function ProductPage({ params }: { params: { id: string } }) {
-  const { id } = await params;
-  const product = await getProduct(id);
+  const product = await getProduct(params.id);
 
   if (!product) {
     notFound();
