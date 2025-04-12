@@ -19,7 +19,11 @@ export default function LoginPage() {
   useEffect(() => {
     if (user) {
       const redirectTo = searchParams.get('redirectTo');
-      router.push(redirectTo || '/');
+      if (redirectTo) {
+        router.push(redirectTo);
+      } else {
+        router.push('/');
+      }
     }
   }, [user, router, searchParams]);
 

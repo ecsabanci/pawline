@@ -1,34 +1,34 @@
-import { InputHTMLAttributes, forwardRef } from 'react';
-import clsx from 'clsx';
+'use client';
 
-interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+import { InputHTMLAttributes, forwardRef } from 'react';
+
+export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
-  fullWidth?: boolean;
 }
 
-const Input = forwardRef<HTMLInputElement, InputProps>(
-  ({ label, error, className, fullWidth = true, ...props }, ref) => {
+export const Input = forwardRef<HTMLInputElement, InputProps>(
+  ({ label, error, className = '', ...props }, ref) => {
     return (
-      <div className={clsx('flex flex-col gap-1', fullWidth && 'w-full')}>
+      <div className="w-full">
         {label && (
-          <label className="block text-sm font-medium text-gray-700">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
             {label}
           </label>
         )}
         <input
           ref={ref}
-          className={clsx(
-            'block py-2 border-gray-300 outline-none border-b-2 transition-colors duration-200',
-            'focus:border-pink-500 focus:ring-pink-500',
-            fullWidth && 'w-full',
-            error && 'border-red-500 focus:border-red-500 focus:ring-red-500',
-            className
-          )}
+          className={`
+            w-full px-4 py-2 border rounded-md
+            focus:outline-none focus:ring-2 focus:ring-rose-300
+            disabled:bg-gray-100 disabled:cursor-not-allowed
+            ${error ? 'border-red-500' : 'border-gray-300'}
+            ${className}
+          `}
           {...props}
         />
         {error && (
-          <span className="text-sm text-red-600">{error}</span>
+          <p className="mt-1 text-sm text-red-500">{error}</p>
         )}
       </div>
     );
