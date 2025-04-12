@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase';
 import { Address } from '@/lib/supabase';
 import { useRouter } from 'next/navigation';
 import Input from '@/components/ui/Input';
+import Button from '@/components/ui/Button';
 
 export default function AddressesPage() {
   const { user } = useAuth();
@@ -155,12 +156,12 @@ export default function AddressesPage() {
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold">Adreslerim</h1>
-          <button
+          <Button
             onClick={() => setShowAddForm(!showAddForm)}
             className={`px-4 py-2 border border-gray-300 rounded-md cursor-pointer ${showAddForm ? 'text-gray-700' : 'bg-emerald-600 text-white hover:bg-emerald-700'}`}
           >
             {showAddForm ? 'İptal' : 'Yeni Adres Ekle'}
-          </button>
+          </Button>
         </div>
 
         {error && (
@@ -240,12 +241,12 @@ export default function AddressesPage() {
                 </label>
               </div>
               <div className="flex justify-end">
-                <button
+                <Button
                   type="submit"
-                  className="bg-emerald-600 text-white px-4 py-2 rounded-md hover:bg-emerald-700 cursor-pointer"
+                  variant="primary"
                 >
                   Kaydet
-                </button>
+                </Button>
               </div>
             </form>
           </div>
@@ -271,19 +272,19 @@ export default function AddressesPage() {
                 <p className="text-gray-600">{address.city} - {address.state} - {address.country} - {address.postal_code}</p>
                 <div className="mt-4 flex justify-end space-x-3">
                   {!address.is_default && (
-                    <button
+                    <Button
                       onClick={() => handleSetDefault(address.id)}
-                      className="text-blue-600 hover:text-blue-800 cursor-pointer font-semibold"
+                      variant="primary"
                     >
                       Varsayılan Yap
-                    </button>
+                    </Button>
                   )}
-                  <button
+                  <Button
                     onClick={() => handleDelete(address.id)}
-                    className="text-red-600 hover:text-red-800 cursor-pointer font-semibold"
+                    variant="danger"
                   >
                     Sil
-                  </button>
+                  </Button>
                 </div>
               </div>
             ))
