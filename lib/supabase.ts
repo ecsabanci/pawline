@@ -32,21 +32,19 @@ export type Profile = {
 
 export type Product = {
   id: string;
-  created_at: string;
   name: string;
   name_tr: string;
   description: string;
   description_tr: string;
   price: number;
-  image_url: string;
-  category_id: string;
   stock_quantity: number;
-  discount_rate?: number | null;
-  categories?: {
-    id: string;
-    name: string;
-    name_tr: string;
-  } | null;
+  image_url: string;
+  image_urls: string[] | null;
+  category_id: string;
+  categories?: Category;
+  discount_rate: number | null;
+  created_at: string;
+  updated_at: string;
 };
 
 export type Order = {

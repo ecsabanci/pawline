@@ -40,6 +40,7 @@ export default function AdminPage() {
     description_tr: '',
     price: '',
     image_url: '',
+    image_urls: [] as string[],
     stock_quantity: '',
     category_id: '',
     discount_rate: '',
@@ -52,6 +53,8 @@ export default function AdminPage() {
   const [discountFilter, setDiscountFilter] = useState<DiscountFilterType>('');
   const [sortField, setSortField] = useState<SortField>('created_at');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
+
+  const [categoryType, setCategoryType] = useState<'main' | 'sub' | null>(null);
 
   useEffect(() => {
     fetchCategories();
@@ -195,9 +198,15 @@ export default function AdminPage() {
       setCategoryForm({ name: '', name_tr: '', parent_id: null });
       setShowAddCategory(false);
       fetchCategories();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error adding category:', error);
-      setToast({ message: 'Kategori eklenirken bir hata oluştu', type: 'error' });
+      let errorMessage = 'Kategori eklenirken bir hata oluştu';
+      
+      if (error.code === '42501') {
+        errorMessage = 'Bu işlem için yetkiniz bulunmuyor. Lütfen admin hesabıyla giriş yaptığınızdan emin olun.';
+      }
+      
+      setToast({ message: errorMessage, type: 'error' });
     }
   };
 
@@ -215,7 +224,8 @@ export default function AdminPage() {
             description: productForm.description,
             description_tr: productForm.description_tr,
             price: parseFloat(productForm.price),
-            image_url: productForm.image_url,
+            image_url: productForm.image_urls[0] || '', // Set first image as main image
+            image_urls: productForm.image_urls,
             stock_quantity: parseInt(productForm.stock_quantity),
             category_id: productForm.category_id,
             discount_rate: productForm.discount_rate ? parseFloat(productForm.discount_rate) : null,
@@ -235,7 +245,8 @@ export default function AdminPage() {
               description: productForm.description,
               description_tr: productForm.description_tr,
               price: parseFloat(productForm.price),
-              image_url: productForm.image_url,
+              image_url: productForm.image_urls[0] || '', // Set first image as main image
+              image_urls: productForm.image_urls,
               stock_quantity: parseInt(productForm.stock_quantity),
               category_id: productForm.category_id,
               discount_rate: productForm.discount_rate ? parseFloat(productForm.discount_rate) : null,
@@ -253,6 +264,7 @@ export default function AdminPage() {
         description_tr: '',
         price: '',
         image_url: '',
+        image_urls: [],
         stock_quantity: '',
         category_id: '',
         discount_rate: '',
@@ -260,9 +272,15 @@ export default function AdminPage() {
       setShowAddProduct(false);
       setEditingProduct(null);
       fetchProducts();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error with product:', error);
-      setToast({ message: `Ürün ${editingProduct ? 'güncellenirken' : 'eklenirken'} bir hata oluştu`, type: 'error' });
+      let errorMessage = `Ürün ${editingProduct ? 'güncellenirken' : 'eklenirken'} bir hata oluştu`;
+      
+      if (error.code === '42501') {
+        errorMessage = 'Bu işlem için yetkiniz bulunmuyor. Lütfen admin hesabıyla giriş yaptığınızdan emin olun.';
+      }
+      
+      setToast({ message: errorMessage, type: 'error' });
     }
   };
 
@@ -275,6 +293,7 @@ export default function AdminPage() {
       description_tr: product.description_tr,
       price: product.price.toString(),
       image_url: product.image_url,
+      image_urls: product.image_urls || [product.image_url],
       stock_quantity: product.stock_quantity.toString(),
       category_id: product.category_id,
       discount_rate: product.discount_rate?.toString() || '',
@@ -303,17 +322,76 @@ export default function AdminPage() {
     }
   };
 
+  const handleDeleteCategory = async (categoryId: string) => {
+    try {
+      // Önce bu kategoriye ait ürün var mı kontrol et
+      const { data: products, error: productsError } = await supabase
+        .from('products')
+        .select('id')
+        .eq('category_id', categoryId);
+
+      if (productsError) throw productsError;
+
+      if (products && products.length > 0) {
+        setToast({ 
+          message: 'Bu kategoriye ait ürünler bulunmaktadır. Kategoriyi silmek için önce ürünleri silmeniz veya başka bir kategoriye taşımanız gerekmektedir.', 
+          type: 'error' 
+        });
+        return;
+      }
+
+      // Alt kategori var mı kontrol et
+      const { data: subCategories, error: subCategoriesError } = await supabase
+        .from('categories')
+        .select('id')
+        .eq('parent_id', categoryId);
+
+      if (subCategoriesError) throw subCategoriesError;
+
+      if (subCategories && subCategories.length > 0) {
+        setToast({ 
+          message: 'Bu kategorinin alt kategorileri bulunmaktadır. Kategoriyi silmek için önce alt kategorileri silmeniz gerekmektedir.', 
+          type: 'error' 
+        });
+        return;
+      }
+
+      if (!window.confirm('Bu kategoriyi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.')) {
+        return;
+      }
+
+      const { error } = await supabase
+        .from('categories')
+        .delete()
+        .eq('id', categoryId);
+
+      if (error) throw error;
+
+      setToast({ message: 'Kategori başarıyla silindi', type: 'success' });
+      fetchCategories();
+    } catch (error: any) {
+      console.error('Error deleting category:', error);
+      let errorMessage = 'Kategori silinirken bir hata oluştu';
+      
+      if (error.code === '42501') {
+        errorMessage = 'Bu işlem için yetkiniz bulunmuyor. Lütfen admin hesabıyla giriş yaptığınızdan emin olun.';
+      }
+      
+      setToast({ message: errorMessage, type: 'error' });
+    }
+  };
+
   const mainCategories = categories.filter(cat => !cat.parent_id);
   const subCategories = categories.filter(cat => cat.parent_id);
 
   const mainCategoryOptions: SelectOption[] = mainCategories.map(cat => ({
     value: cat.id,
-    label: cat.name
+    label: cat.name_tr
   }));
 
-  const categoryOptions: SelectOption[] = subCategories.map(cat => ({
+  const categoryOptions: SelectOption[] = categories.map(cat => ({
     value: cat.id,
-    label: cat.name
+    label: `${cat.name_tr}${cat.parent_id ? ` (${categories.find(c => c.id === cat.parent_id)?.name_tr} alt kategorisi)` : ' (Ana kategori)'}`
   }));
 
   const filterCategoryOptions: SelectOption[] = [
@@ -345,12 +423,26 @@ export default function AdminPage() {
         <div className="mb-12">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-semibold">Kategori Yönetimi</h2>
-            <Button
-              onClick={() => setShowAddCategory(!showAddCategory)}
-              variant={showAddCategory ? 'outline' : 'primary'}
-            >
-              {showAddCategory ? 'İptal' : 'Yeni Kategori Ekle'}
-            </Button>
+            <div className="space-x-2">
+              <Button
+                onClick={() => {
+                  setShowAddCategory(!showAddCategory);
+                  setCategoryType(showAddCategory ? null : 'main');
+                }}
+                variant={showAddCategory && categoryType === 'main' ? 'outline' : 'primary'}
+              >
+                {showAddCategory && categoryType === 'main' ? 'İptal' : 'Yeni Ana Kategori Ekle'}
+              </Button>
+              <Button
+                onClick={() => {
+                  setShowAddCategory(!showAddCategory);
+                  setCategoryType(showAddCategory ? null : 'sub');
+                }}
+                variant={showAddCategory && categoryType === 'sub' ? 'outline' : 'primary'}
+              >
+                {showAddCategory && categoryType === 'sub' ? 'İptal' : 'Yeni Alt Kategori Ekle'}
+              </Button>
+            </div>
           </div>
 
           {showAddCategory && (
@@ -367,18 +459,69 @@ export default function AdminPage() {
                 onChange={(e) => setCategoryForm({ ...categoryForm, name_tr: e.target.value })}
                 required
               />
-              <Select
-                label="Üst Kategori (Opsiyonel)"
-                options={mainCategoryOptions}
-                onChange={(value) => setCategoryForm({ ...categoryForm, parent_id: value || null })}
-              />
+              {categoryType === 'sub' && (
+                <Select
+                  label="Üst Kategori"
+                  options={mainCategoryOptions}
+                  onChange={(value) => setCategoryForm({ ...categoryForm, parent_id: value })}
+                  required
+                />
+              )}
               <div className="flex justify-end">
                 <Button type="submit" variant="primary">
-                  Kategori Ekle
+                  {categoryType === 'main' ? 'Ana Kategori Ekle' : 'Alt Kategori Ekle'}
                 </Button>
               </div>
             </form>
           )}
+
+          {/* Kategori Listesi */}
+          <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Kategori Adı (TR)
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Kategori Adı (EN)
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Üst Kategori
+                    </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      İşlemler
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {categories.map((category) => (
+                    <tr key={category.id}>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {category.name_tr}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {category.name}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        {category.parent_id ? categories.find(c => c.id === category.parent_id)?.name_tr : '-'}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <Button
+                          onClick={() => handleDeleteCategory(category.id)}
+                          variant="danger"
+                          size="sm"
+                        >
+                          Sil
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
 
         {/* Ürün Yönetimi */}
@@ -397,6 +540,7 @@ export default function AdminPage() {
                     description_tr: '',
                     price: '',
                     image_url: '',
+                    image_urls: [],
                     stock_quantity: '',
                     category_id: '',
                     discount_rate: '',
@@ -455,13 +599,51 @@ export default function AdminPage() {
                 onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
                 required
               />
-              <Input
-                label="Görsel URL"
-                type="url"
-                value={productForm.image_url}
-                onChange={(e) => setProductForm({ ...productForm, image_url: e.target.value })}
-                required
-              />
+              <div className="space-y-2">
+                <label className="block text-sm font-medium text-gray-700">
+                  Görsel URL'leri
+                </label>
+                <div className="space-y-2">
+                  {productForm.image_urls.map((url, index) => (
+                    <div key={index} className="flex gap-2">
+                      <Input
+                        value={url}
+                        onChange={(e) => {
+                          const newUrls = [...productForm.image_urls];
+                          newUrls[index] = e.target.value;
+                          setProductForm({ ...productForm, image_urls: newUrls });
+                        }}
+                        type="url"
+                        placeholder={`Görsel URL ${index + 1}`}
+                      />
+                      <Button
+                        type="button"
+                        variant="danger"
+                        size="sm"
+                        onClick={() => {
+                          const newUrls = productForm.image_urls.filter((_, i) => i !== index);
+                          setProductForm({ ...productForm, image_urls: newUrls });
+                        }}
+                      >
+                        Sil
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setProductForm({
+                        ...productForm,
+                        image_urls: [...productForm.image_urls, '']
+                      });
+                    }}
+                  >
+                    Yeni Görsel URL Ekle
+                  </Button>
+                </div>
+              </div>
               <Input
                 label="Stok Miktarı"
                 type="number"

@@ -45,8 +45,8 @@ export default function CartPage() {
                 />
               </div>
               <div className="flex-grow">
-                <h3 className="font-semibold">{item.name}</h3>
-                <p className="text-gray-600 text-sm">{item.description}</p>
+                <h3 className="font-semibold">{item.name_tr}</h3>
+                <p className="text-gray-600 text-sm">{item.description_tr}</p>
                 <div className="mt-2 flex items-center gap-4">
                   <select
                     value={item.quantity}
