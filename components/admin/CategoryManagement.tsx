@@ -41,6 +41,9 @@ export default function CategoryManagement({
     });
   };
 
+  // Ana kategorileri filtrele
+  const mainCategories = categories.filter(cat => !cat.parent_id);
+
   return (
     <div className="space-y-6">
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -89,23 +92,26 @@ export default function CategoryManagement({
 
         <div>
           <label htmlFor="parent_id" className="block text-sm font-medium text-gray-700">
-            Üst Kategori
+            Üst Kategori (Ana kategori için boş bırakın)
           </label>
           <Select
             id="parent_id"
             name="parent_id"
             value={categoryForm.parent_id || ''}
-            onChange={(value) => setCategoryForm(prev => ({ ...prev, parent_id: value }))}
+            onChange={(value) => setCategoryForm(prev => ({ ...prev, parent_id: value || null }))}
             className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-pink-500 focus:ring-pink-500 sm:text-sm"
-            options={categories.map(category => ({
-              label: category.name,
-              value: category.id
-            }))}
+            options={[
+              { label: 'Ana Kategori (Üst kategori yok)', value: '' },
+              ...mainCategories.map(category => ({
+                label: category.name_tr,
+                value: category.id
+              }))
+            ]}
           />
         </div>
 
         <Button type="submit" variant="primary" className="w-full">
-          Kategori Ekle
+          {categoryForm.parent_id ? 'Alt Kategori Ekle' : 'Ana Kategori Ekle'}
         </Button>
       </form>
 
@@ -123,7 +129,7 @@ export default function CategoryManagement({
                 Slug
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Üst Kategori
+                Kategori Tipi
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 İşlemler
@@ -143,7 +149,13 @@ export default function CategoryManagement({
                   {category.slug}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {category.parent_id ? categories.find(c => c.id === category.parent_id)?.name : '-'}
+                  {category.parent_id ? (
+                    <span className="text-blue-600">
+                      {categories.find(c => c.id === category.parent_id)?.name_tr} alt kategorisi
+                    </span>
+                  ) : (
+                    <span className="text-green-600">Ana Kategori</span>
+                  )}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   <Button
