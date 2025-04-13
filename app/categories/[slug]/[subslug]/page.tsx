@@ -1,14 +1,17 @@
+import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { createServerSupabaseClient } from '@/lib/supabase.server';
-import { notFound } from 'next/navigation';
 import ProductGrid from '@/components/ProductGrid';
 
-export default async function SubCategoryPage({
-  params,
-}: {
-  params: { [key: string]: string | string[] }
-}) {
-  const { slug, subslug } = params as { slug: string; subslug: string };
+type SubCategoryPageProps = {
+  params: {
+    slug: string;
+    subslug: string;
+  };
+};
+
+export default async function SubCategoryPage({ params }: SubCategoryPageProps) {
+  const { slug, subslug } = await params;
   const supabase = createServerSupabaseClient();
 
   // Fetch parent category
@@ -55,13 +58,10 @@ export default async function SubCategoryPage({
         <span className="text-primary">{subcategory.name_tr}</span>
       </nav>
 
-      {/* Category title */}
       <h1 className="text-3xl font-bold mb-8">{subcategory.name_tr}</h1>
 
-      {/* Products grid */}
       <ProductGrid products={products || []} />
 
-      {/* No products message */}
       {(!products || products.length === 0) && (
         <div className="text-center py-12 text-gray-500">
           Bu kategoride henüz ürün bulunmamaktadır.
@@ -69,4 +69,4 @@ export default async function SubCategoryPage({
       )}
     </div>
   );
-} 
+}

@@ -16,24 +16,11 @@ export default function FavoriteList({ userId }: FavoriteListProps) {
   const [favorites, setFavorites] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    fetchFavorites();
-  }, [fetchFavorites]);
-
   const fetchFavorites = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('favorites')
-        .select(`
-          product_id,
-          products:product_id (
-            id,
-            name_tr,
-            price,
-            image_url,
-            discount_rate
-          )
-        `)
+        .select('*, products:product_id(*)')
         .eq('user_id', userId);
 
       if (error) throw error;
@@ -41,7 +28,14 @@ export default function FavoriteList({ userId }: FavoriteListProps) {
       // Transform the data to get just the products
       const products = data
         .map(item => item.products)
-        .filter((product): product is Product => product !== null);
+        .filter((product): product is Product => {
+          return product !== null && 
+            typeof product === 'object' && 
+            'id' in product &&
+            'name_tr' in product &&
+            'price' in product &&
+            'image_url' in product;
+        });
 
       setFavorites(products);
     } catch (error) {
@@ -50,6 +44,10 @@ export default function FavoriteList({ userId }: FavoriteListProps) {
       setLoading(false);
     }
   }, [userId]);
+
+  useEffect(() => {
+    fetchFavorites();
+  }, [fetchFavorites]);
 
   if (loading) {
     return <LoadingSpinner />;
