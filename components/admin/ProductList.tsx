@@ -1,6 +1,7 @@
 import Button from '@/components/ui/Button';
 import { Product, Category } from '@/lib/supabase';
 import { formatCurrency } from '@/lib/utils';
+import Image from 'next/image';
 
 interface ProductListProps {
   products: Product[];
@@ -33,8 +34,13 @@ const ProductList = ({ products, categories, onEdit, onDelete }: ProductListProp
             <tr key={product.id}>
               <td className="px-6 py-4 whitespace-nowrap">
                 <div className="flex items-center">
-                  <div className="h-10 w-10 flex-shrink-0">
-                    <img className="h-10 w-10 rounded-full object-cover" src={product.image_url} alt={product.name_tr} />
+                  <div className="h-10 w-10 flex-shrink-0 relative">
+                    <Image
+                      src={product.image_url}
+                      alt={product.name_tr}
+                      fill
+                      className="rounded-full object-cover"
+                    />
                   </div>
                   <div className="ml-4">
                     <div className="text-sm font-medium text-gray-900">{product.name_tr}</div>

@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Product, Category } from '@/lib/supabase';
 import Link from 'next/link';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 

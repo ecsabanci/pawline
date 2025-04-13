@@ -43,7 +43,9 @@ export default function ProductForm({ categories, editingProduct, onSubmit }: Pr
 
   const categoryOptions = categories.map(cat => ({
     value: cat.id,
-    label: `${cat.name_tr}${cat.parent_id ? ` (${categories.find(c => c.id === cat.parent_id)?.name_tr} alt kategorisi)` : ' (Ana kategori)'}`
+    label: cat.parent_id 
+      ? `${cat.name_tr} (${categories.find(c => c.id === cat.parent_id)?.name_tr} alt kategorisi)`
+      : `${cat.name_tr} (Ana kategori)`
   }));
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -124,7 +126,7 @@ export default function ProductForm({ categories, editingProduct, onSubmit }: Pr
       />
       <div className="space-y-2">
         <label className="block text-sm font-medium text-gray-700">
-          Görsel URL'leri
+          Görseller
         </label>
         <div className="space-y-2">
           {formData.image_urls.map((url, index) => (
@@ -191,7 +193,7 @@ export default function ProductForm({ categories, editingProduct, onSubmit }: Pr
       />
       <div className="flex justify-end">
         <Button type="submit" variant="primary">
-          {editingProduct ? 'Ürünü Güncelle' : 'Ürün Ekle'}
+          {editingProduct ? "Ürünü Güncelle" : "Ürün Ekle"}
         </Button>
       </div>
     </form>

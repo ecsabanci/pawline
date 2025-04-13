@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Product } from '@/lib/supabase';
 import Link from 'next/link';
@@ -18,9 +18,9 @@ export default function FavoriteList({ userId }: FavoriteListProps) {
 
   useEffect(() => {
     fetchFavorites();
-  }, []);
+  }, [fetchFavorites]);
 
-  const fetchFavorites = async () => {
+  const fetchFavorites = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('favorites')
@@ -49,7 +49,7 @@ export default function FavoriteList({ userId }: FavoriteListProps) {
     } finally {
       setLoading(false);
     }
-  };
+  }, [userId]);
 
   if (loading) {
     return <LoadingSpinner />;

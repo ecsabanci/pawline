@@ -47,11 +47,11 @@ export default function ProductsPage() {
 
       setToast({ message: 'Ürün başarıyla eklendi', type: 'success' });
       fetchData();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error adding product:', error);
       let errorMessage = 'Ürün eklenirken bir hata oluştu';
       
-      if (error.code === '42501') {
+      if (typeof error === 'object' && error && 'code' in error && error.code === '42501') {
         errorMessage = 'Bu işlem için yetkiniz bulunmuyor. Lütfen admin hesabıyla giriş yaptığınızdan emin olun.';
       }
       
@@ -70,11 +70,11 @@ export default function ProductsPage() {
 
       setToast({ message: 'Ürün başarıyla güncellendi', type: 'success' });
       fetchData();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error updating product:', error);
       let errorMessage = 'Ürün güncellenirken bir hata oluştu';
       
-      if (error.code === '42501') {
+      if (typeof error === 'object' && error && 'code' in error && error.code === '42501') {
         errorMessage = 'Bu işlem için yetkiniz bulunmuyor. Lütfen admin hesabıyla giriş yaptığınızdan emin olun.';
       }
       
@@ -97,11 +97,11 @@ export default function ProductsPage() {
 
       setToast({ message: 'Ürün başarıyla silindi', type: 'success' });
       fetchData();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error deleting product:', error);
       let errorMessage = 'Ürün silinirken bir hata oluştu';
       
-      if (error.code === '42501') {
+      if (typeof error === 'object' && error && 'code' in error && error.code === '42501') {
         errorMessage = 'Bu işlem için yetkiniz bulunmuyor. Lütfen admin hesabıyla giriş yaptığınızdan emin olun.';
       }
       

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/lib/supabase';
 
@@ -13,13 +13,7 @@ export default function FavoriteButton({ productId, className }: FavoriteButtonP
   const { user } = useAuth();
   const [isFavorite, setIsFavorite] = useState(false);
 
-  useEffect(() => {
-    if (user) {
-      checkFavoriteStatus();
-    }
-  }, [user, productId]);
-
-  const checkFavoriteStatus = async () => {
+  const checkFavoriteStatus = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('favorites')
@@ -36,7 +30,13 @@ export default function FavoriteButton({ productId, className }: FavoriteButtonP
     } catch (error) {
       console.error('Error checking favorite status:', error);
     }
-  };
+  }, [user?.id, productId]);
+
+  useEffect(() => {
+    if (user) {
+      checkFavoriteStatus();
+    }
+  }, [user, checkFavoriteStatus]);
 
   const toggleFavorite = async () => {
     if (!user) {

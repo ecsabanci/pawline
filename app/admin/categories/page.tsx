@@ -25,7 +25,7 @@ export default function CategoriesPage() {
       
       if (error) throw error;
       setCategories(data);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Error fetching categories:', error);
       setToast({ message: 'Kategoriler yüklenirken bir hata oluştu', type: 'error' });
     } finally {
@@ -43,11 +43,11 @@ export default function CategoriesPage() {
 
       setToast({ message: 'Kategori başarıyla eklendi', type: 'success' });
       fetchCategories();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error adding category:', error);
       let errorMessage = 'Kategori eklenirken bir hata oluştu';
       
-      if (error.code === '42501') {
+      if (typeof error === 'object' && error && 'code' in error && error.code === '42501') {
         errorMessage = 'Bu işlem için yetkiniz bulunmuyor. Lütfen admin hesabıyla giriş yaptığınızdan emin olun.';
       }
       
@@ -102,11 +102,11 @@ export default function CategoriesPage() {
 
       setToast({ message: 'Kategori başarıyla silindi', type: 'success' });
       fetchCategories();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error deleting category:', error);
       let errorMessage = 'Kategori silinirken bir hata oluştu';
       
-      if (error.code === '42501') {
+      if (typeof error === 'object' && error && 'code' in error && error.code === '42501') {
         errorMessage = 'Bu işlem için yetkiniz bulunmuyor. Lütfen admin hesabıyla giriş yaptığınızdan emin olun.';
       }
       
