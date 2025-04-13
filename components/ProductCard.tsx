@@ -25,7 +25,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               src={product.image_url}
               alt={product.name_tr}
               fill
-              className="object-cover"
+              className="object-contain"
             />
           </div>
         </Link>

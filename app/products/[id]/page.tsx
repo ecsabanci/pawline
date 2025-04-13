@@ -43,7 +43,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
             src={product.image_url}
             alt={product.name_tr}
             fill
-            className="object-cover rounded-lg"
+            className="object-contain rounded-lg"
           />
         </div>
         <div>

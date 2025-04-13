@@ -84,42 +84,126 @@ export default function Header() {
 
             {!loading && (
               <>
-                {user ? (
-                  <div className="flex items-center space-x-4">
-                    {isAdmin && (
-                      <Link
-                        href="/admin"
-                        className="text-pink-600 hover:text-pink-700 font-medium"
-                      >
-                        Admin Paneli
+                {/* Desktop menü */}
+                <div className="hidden md:flex items-center space-x-4">
+                  {user ? (
+                    <>
+                      {isAdmin && (
+                        <Link
+                          href="/admin"
+                          className="text-pink-600 hover:text-pink-700 font-medium"
+                        >
+                          Admin Paneli
+                        </Link>
+                      )}
+                      <Link href="/profile" className="text-gray-600 hover:text-gray-800">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#00000"><path d="M234-276q51-39 114-61.5T480-360q69 0 132 22.5T726-276q35-41 54.5-93T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 59 19.5 111t54.5 93Zm246-164q-59 0-99.5-40.5T340-580q0-59 40.5-99.5T480-720q59 0 99.5 40.5T620-580q0 59-40.5 99.5T480-440Zm0 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q53 0 100-15.5t86-44.5q-39-29-86-44.5T480-280q-53 0-100 15.5T294-220q39 29 86 44.5T480-160Zm0-360q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17Zm0-60Zm0 360Z" /></svg>
                       </Link>
-                    )}
-                    <Link href="/profile" className="text-gray-600 hover:text-gray-800">
+                      <Button
+                        onClick={() => signOut()}
+                        variant="danger"
+                      >
+                        Çıkış Yap
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Link
+                        href="/auth/login"
+                        className="text-gray-600 hover:text-gray-800"
+                      >
+                        Giriş Yap
+                      </Link>
+                      <Link
+                        href="/auth/register"
+                        className="bg-indigo-700 text-white px-4 py-2 rounded"
+                      >
+                        Kayıt Ol
+                      </Link>
+                    </>
+                  )}
+                </div>
+
+                {/* Mobil menü */}
+                <div className="md:hidden">
+                  <Menu as="div" className="relative flex">
+                    <Menu.Button className="text-gray-600 hover:text-gray-800">
                       <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#00000"><path d="M234-276q51-39 114-61.5T480-360q69 0 132 22.5T726-276q35-41 54.5-93T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 59 19.5 111t54.5 93Zm246-164q-59 0-99.5-40.5T340-580q0-59 40.5-99.5T480-720q59 0 99.5 40.5T620-580q0 59-40.5 99.5T480-440Zm0 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q53 0 100-15.5t86-44.5q-39-29-86-44.5T480-280q-53 0-100 15.5T294-220q39 29 86 44.5T480-160Zm0-360q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17Zm0-60Zm0 360Z" /></svg>
-                    </Link>
-                    <Button
-                      onClick={() => signOut()}
-                      variant="danger"
+                    </Menu.Button>
+
+                    <Transition
+                      as={Fragment}
+                      enter="transition ease-out duration-100"
+                      enterFrom="transform opacity-0 scale-95"
+                      enterTo="transform opacity-100 scale-100"
+                      leave="transition ease-in duration-75"
+                      leaveFrom="transform opacity-100 scale-100"
+                      leaveTo="transform opacity-0 scale-95"
                     >
-                      Çıkış Yap
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="flex items-center space-x-4">
-                    <Link
-                      href="/auth/login"
-                      className="text-gray-600 hover:text-gray-800"
-                    >
-                      Giriş Yap
-                    </Link>
-                    <Link
-                      href="/auth/register"
-                      className="bg-indigo-700 text-white px-4 py-2 rounded"
-                    >
-                      Kayıt Ol
-                    </Link>
-                  </div>
-                )}
+                      <Menu.Items className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 focus:outline-none z-50">
+                        {user ? (
+                          <>
+                            <Menu.Item>
+                              {({ active }) => (
+                                <Link
+                                  href="/profile"
+                                  className={`${active ? 'bg-gray-100' : ''} block px-4 py-2 text-sm text-gray-700`}
+                                >
+                                  Profilim
+                                </Link>
+                              )}
+                            </Menu.Item>
+                            {isAdmin && (
+                              <Menu.Item>
+                                {({ active }) => (
+                                  <Link
+                                    href="/admin"
+                                    className={`${active ? 'bg-gray-100' : ''} block px-4 py-2 text-sm text-pink-600`}
+                                  >
+                                    Admin Paneli
+                                  </Link>
+                                )}
+                              </Menu.Item>
+                            )}
+                            <Menu.Item>
+                              {({ active }) => (
+                                <button
+                                  onClick={() => signOut()}
+                                  className={`${active ? 'bg-gray-100' : ''} block w-full text-left px-4 py-2 text-sm text-red-600`}
+                                >
+                                  Çıkış Yap
+                                </button>
+                              )}
+                            </Menu.Item>
+                          </>
+                        ) : (
+                          <>
+                            <Menu.Item>
+                              {({ active }) => (
+                                <Link
+                                  href="/auth/login"
+                                  className={`${active ? 'bg-gray-100' : ''} block px-4 py-2 text-sm text-gray-700`}
+                                >
+                                  Giriş Yap
+                                </Link>
+                              )}
+                            </Menu.Item>
+                            <Menu.Item>
+                              {({ active }) => (
+                                <Link
+                                  href="/auth/register"
+                                  className={`${active ? 'bg-gray-100' : ''} block px-4 py-2 text-sm text-indigo-600`}
+                                >
+                                  Kayıt Ol
+                                </Link>
+                              )}
+                            </Menu.Item>
+                          </>
+                        )}
+                      </Menu.Items>
+                    </Transition>
+                  </Menu>
+                </div>
               </>
             )}
           </div>
@@ -159,7 +243,7 @@ export default function Header() {
                     leaveTo="transform opacity-0 scale-95"
                   >
                     <Menu.Items className="absolute left-0 top-full w-64 bg-white rounded-lg shadow-lg py-1 focus:outline-none z-50">
-                      <div className="px-1 py-1">
+                      <div className="px-1 py-1 max-h-[60vh] overflow-y-auto">
                         {getSubCategories(category.id).map((subCategory) => (
                           <Menu.Item key={subCategory.id}>
                             {({ active }) => (

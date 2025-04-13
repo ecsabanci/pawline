@@ -5,7 +5,9 @@ import { useDispatch } from 'react-redux';
 import { addToCart } from '@/store/features/cartSlice';
 import { Product } from '@/lib/supabase';
 import Button from '@/components/ui/Button';
-import Toast from '@/components/ui/Toast';
+import { Toast } from '@/components/ui/Toast';
+import { useAuth } from '@/contexts/AuthContext';
+import { useRouter } from 'next/navigation';
 
 interface AddToCartButtonProps {
   product: Product;
@@ -13,10 +15,18 @@ interface AddToCartButtonProps {
 
 export default function AddToCartButton({ product }: AddToCartButtonProps) {
   const dispatch = useDispatch();
+  const { user } = useAuth();
+  const router = useRouter();
   const [showToast, setShowToast] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const handleAddToCart = async () => {
+    if (!user) {
+      // Kullanıcı giriş yapmamışsa login sayfasına yönlendir
+      router.push(`/auth/login?redirectTo=${encodeURIComponent(window.location.pathname)}`);
+      return;
+    }
+
     setLoading(true);
     try {
       dispatch(addToCart(product));
@@ -32,7 +42,7 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
     <>
       <Button
         onClick={handleAddToCart}
-        variant="primary"
+        variant="outline"
         fullWidth
         loading={loading}
         disabled={product.stock_quantity === 0}
