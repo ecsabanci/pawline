@@ -14,12 +14,12 @@ export const supabase = createBrowserClient(
 // Types for our Supabase tables
 export type Category = {
   id: string;
+  created_at: string;
+  updated_at: string;
   name: string;
   name_tr: string;
   slug: string;
   parent_id: string | null;
-  created_at: string;
-  updated_at: string;
 };
 
 export type Profile = {
