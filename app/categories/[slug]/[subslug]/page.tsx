@@ -4,10 +4,10 @@ import { createServerSupabaseClient } from '@/lib/supabase.server';
 import ProductGrid from '@/components/ProductGrid';
 
 type SubCategoryPageProps = {
-  params: {
+  params: Promise<{
     slug: string;
     subslug: string;
-  };
+  }>;
 };
 
 export default async function SubCategoryPage({ params }: SubCategoryPageProps) {

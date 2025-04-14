@@ -27,21 +27,35 @@ export default function ProductManagement({
     setFilteredProducts(filtered);
   };
 
+  const handleResetFilter = () => {
+    setFilteredProducts(products);
+  };
+
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-2xl font-semibold">Ürün Yönetimi</h2>
-        <Button
-          onClick={() => {
-            setShowAddProduct(!showAddProduct);
-            if (!showAddProduct) {
-              setEditingProduct(null);
-            }
-          }}
-          variant={showAddProduct ? 'outline' : 'primary'}
-        >
-          {showAddProduct ? 'İptal' : 'Yeni Ürün Ekle'}
-        </Button>
+        <div className="space-x-2">
+          {filteredProducts.length !== products.length && (
+            <Button
+              onClick={handleResetFilter}
+              variant="outline"
+            >
+              Filtreyi Temizle
+            </Button>
+          )}
+          <Button
+            onClick={() => {
+              setShowAddProduct(!showAddProduct);
+              if (!showAddProduct) {
+                setEditingProduct(null);
+              }
+            }}
+            variant={showAddProduct ? 'outline' : 'primary'}
+          >
+            {showAddProduct ? 'İptal' : 'Yeni Ürün Ekle'}
+          </Button>
+        </div>
       </div>
 
       {showAddProduct && (

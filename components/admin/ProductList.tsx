@@ -8,12 +8,19 @@ interface ProductListProps {
   categories: Category[];
   onEdit: (product: Product) => void;
   onDelete: (id: string) => void;
+  onFilter: (filtered: Product[]) => void;
+  allProducts: Product[];
 }
 
-const ProductList = ({ products, categories, onEdit, onDelete }: ProductListProps) => {
+const ProductList = ({ products, categories, onEdit, onDelete, onFilter, allProducts }: ProductListProps) => {
   const getCategoryName = (categoryId: string) => {
     const category = categories.find(cat => cat.id === categoryId);
     return category ? category.name_tr : 'Kategori Bulunamadı';
+  };
+
+  const handleFilter = (productId: string) => {
+    const filtered = allProducts.filter(p => p.id === productId);
+    onFilter(filtered);
   };
 
   return (
@@ -65,6 +72,9 @@ const ProductList = ({ products, categories, onEdit, onDelete }: ProductListProp
                 </Button>
                 <Button variant="danger" size="sm" onClick={() => onDelete(product.id)}>
                   Sil
+                </Button>
+                <Button variant="outline" size="sm" onClick={() => handleFilter(product.id)}>
+                  Filtrele
                 </Button>
               </td>
             </tr>
