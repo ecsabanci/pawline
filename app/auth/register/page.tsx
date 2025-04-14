@@ -15,12 +15,6 @@ function RegisterForm() {
   const [loading, setLoading] = useState(false);
   const [registered, setRegistered] = useState(false);
 
-  const getRedirectUrl = () => {
-    // Production URL'i kullan veya development için localhost
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-    return `${siteUrl}/auth/callback`;
-  };
-
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -34,7 +28,7 @@ function RegisterForm() {
           data: {
             full_name: fullName,
           },
-          emailRedirectTo: getRedirectUrl(),
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
       });
 
