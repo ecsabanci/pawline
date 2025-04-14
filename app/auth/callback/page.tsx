@@ -10,6 +10,7 @@ function CallbackContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const handleCallback = async () => {
@@ -40,16 +41,29 @@ function CallbackContent() {
           if (profileError) {
             console.error('Error creating profile:', profileError);
             setError('Profil oluşturulurken bir hata oluştu.');
+            return;
+          }
+
+          // Sign out the user after profile creation
+          const { error: signOutError } = await supabase.auth.signOut();
+          if (signOutError) {
+            console.error('Error signing out:', signOutError);
           }
         }
       } catch (error) {
         console.error('Callback error:', error);
         setError('Bir hata oluştu. Lütfen tekrar deneyin.');
+      } finally {
+        setLoading(false);
       }
     };
 
     handleCallback();
   }, [router, searchParams]);
+
+  if (loading) {
+    return <LoadingSpinner fullScreen />;
+  }
 
   if (error) {
     return (
