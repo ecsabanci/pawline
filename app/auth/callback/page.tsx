@@ -1,56 +1,50 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
 
 export default function AuthCallbackPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const supabase = createClientComponentClient();
 
   useEffect(() => {
     const handleEmailConfirmation = async () => {
       try {
+        // Get the session to check if the user is authenticated
         const { data: { session }, error } = await supabase.auth.getSession();
-        
+
         if (error) throw error;
 
-        if (session?.user) {
-          // Create profile after email verification
-          const response = await fetch('/api/auth/register', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              userId: session.user.id,
-              email: session.user.email,
-              fullName: session.user.user_metadata.full_name,
-            }),
-          });
-
-          if (!response.ok) {
-            const data = await response.json();
-            throw new Error(data.error || 'Failed to create profile');
-          }
-
+        if (session) {
+          // User is authenticated, redirect to home page
           router.push('/');
-          router.refresh();
+        } else {
+          // If no session, check for error message in URL
+          const errorMessage = searchParams.get('error_description');
+          if (errorMessage) {
+            console.error('Authentication error:', errorMessage);
+            router.push('/auth/login?error=' + encodeURIComponent(errorMessage));
+          } else {
+            // No error but also no session, redirect to login
+            router.push('/auth/login');
+          }
         }
       } catch (error) {
-        console.error('Error in email confirmation:', error);
-        router.push('/auth/login?error=EmailConfirmationFailed');
+        console.error('Error during email confirmation:', error);
+        router.push('/auth/login?error=Email doğrulama işlemi başarısız oldu');
       }
     };
 
     handleEmailConfirmation();
-  }, [router]);
+  }, [router, searchParams, supabase.auth]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full space-y-8 text-center">
-        <h2 className="text-3xl font-extrabold text-gray-900">
-          Email Doğrulanıyor
-        </h2>
+        <LoadingSpinner size="lg" text="Email Doğrulanıyor" />
         <p className="mt-2 text-gray-600">
           Lütfen bekleyin, hesabınız doğrulanıyor...
         </p>
