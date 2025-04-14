@@ -18,8 +18,24 @@ function CallbackContent() {
 
         if (error) throw error;
 
-        if (session) {
-          // User is authenticated, redirect to home page
+        if (session?.user) {
+          // Create or update user profile
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .upsert({
+              id: session.user.id,
+              email: session.user.email,
+              full_name: session.user.user_metadata.full_name,
+              updated_at: new Date().toISOString(),
+            }, {
+              onConflict: 'id'
+            });
+
+          if (profileError) {
+            console.error('Error creating/updating profile:', profileError);
+          }
+
+          // Redirect to home page
           router.push('/');
         } else {
           // If no session, check for error message in URL
@@ -39,7 +55,7 @@ function CallbackContent() {
     };
 
     handleEmailConfirmation();
-  }, [router, searchParams, supabase.auth]);
+  }, [router, searchParams, supabase]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
