@@ -16,15 +16,9 @@ function RegisterForm() {
   const [registered, setRegistered] = useState(false);
 
   const getRedirectUrl = () => {
-    // Vercel'de deploy edildiğinde VERCEL_URL environment variable'ı otomatik olarak set edilir
-    if (process.env.NEXT_PUBLIC_SITE_URL) {
-      return `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`;
-    }
-    if (process.env.NEXT_PUBLIC_VERCEL_URL) {
-      return `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/auth/callback`;
-    }
-    // Geliştirme ortamında localhost'u kullan
-    return `${window.location.origin}/auth/callback`;
+    // Production URL'i kullan veya development için localhost
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    return `${siteUrl}/auth/callback`;
   };
 
   const handleRegister = async (e: React.FormEvent) => {
