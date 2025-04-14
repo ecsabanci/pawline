@@ -18,6 +18,12 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    // Show error message from URL if exists
+    const errorMsg = searchParams.get('error');
+    if (errorMsg) {
+      setError(decodeURIComponent(errorMsg));
+    }
+
     if (user) {
       const redirectTo = searchParams.get('redirectTo');
       if (redirectTo) {
@@ -34,12 +40,12 @@ function LoginForm() {
     setLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) throw error;
+      if (signInError) throw signInError;
 
       // Auth state change listener in AuthContext will handle the redirect
     } catch (error) {
