@@ -15,18 +15,23 @@ function CallbackContent() {
 
   useEffect(() => {
     const handleCallback = async () => {
+      const token = searchParams.get('token');
+      const type = searchParams.get('type');
       const isVerification = searchParams.get('verification') === 'true';
-      
-      if (!isVerification) {
+
+      // If this is not a verification callback, redirect to home
+      if (!token || !type || !isVerification) {
         router.replace('/');
         return;
       }
 
       try {
+        // First, get the session to ensure the token is valid
         const { data, error: authError } = await supabase.auth.getSession();
         if (authError) throw authError;
 
         if (data?.session?.user) {
+          // Create or update user profile
           const { error: profileError } = await supabase
             .from('profiles')
             .upsert({
@@ -44,6 +49,7 @@ function CallbackContent() {
             return;
           }
 
+          // Sign out after profile creation
           await supabase.auth.signOut();
           setIsConfirmed(true);
         }
@@ -57,6 +63,17 @@ function CallbackContent() {
 
     handleCallback();
   }, [router, searchParams]);
+
+  // Prevent any automatic redirects
+  useEffect(() => {
+    const preventRedirect = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      e.returnValue = '';
+    };
+
+    window.addEventListener('beforeunload', preventRedirect);
+    return () => window.removeEventListener('beforeunload', preventRedirect);
+  }, []);
 
   if (loading) {
     return <LoadingSpinner fullScreen />;
