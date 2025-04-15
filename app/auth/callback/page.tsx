@@ -1,25 +1,31 @@
 'use client';
 
 import { useEffect, useState, Suspense } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Link from 'next/link';
 
 function CallbackContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [isConfirmed, setIsConfirmed] = useState(false);
 
   useEffect(() => {
     const handleCallback = async () => {
+      const isVerification = searchParams.get('verification') === 'true';
+      
+      if (!isVerification) {
+        router.replace('/');
+        return;
+      }
+
       try {
-        // Handle the OAuth callback
         const { data, error: authError } = await supabase.auth.getSession();
         if (authError) throw authError;
 
-        // If we have a session, create/update the profile
         if (data?.session?.user) {
           const { error: profileError } = await supabase
             .from('profiles')
@@ -38,7 +44,6 @@ function CallbackContent() {
             return;
           }
 
-          // Sign out after profile creation
           await supabase.auth.signOut();
           setIsConfirmed(true);
         }
@@ -50,19 +55,8 @@ function CallbackContent() {
       }
     };
 
-    // Prevent the default redirect
-    const preventRedirect = (e: BeforeUnloadEvent) => {
-      e.preventDefault();
-      return false;
-    };
-    window.addEventListener('beforeunload', preventRedirect);
-
     handleCallback();
-
-    return () => {
-      window.removeEventListener('beforeunload', preventRedirect);
-    };
-  }, [router]);
+  }, [router, searchParams]);
 
   if (loading) {
     return <LoadingSpinner fullScreen />;
