@@ -2,11 +2,12 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { supabase } from '@/lib/supabase';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import Input from '@/components/ui/Input';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import Button from '@/components/ui/Button';
 
 function LoginForm() {
   const router = useRouter();
@@ -16,12 +17,17 @@ function LoginForm() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
+  const supabase = createClientComponentClient();
 
   useEffect(() => {
-    // Show error message from URL if exists
-    const errorMsg = searchParams.get('error');
-    if (errorMsg) {
-      setError(decodeURIComponent(errorMsg));
+    const successMessage = searchParams.get('success');
+    const errorMessage = searchParams.get('error');
+
+    if (successMessage) {
+      setToast({ message: decodeURIComponent(successMessage), type: 'success' });
+    } else if (errorMessage) {
+      setToast({ message: decodeURIComponent(errorMessage), type: 'error' });
     }
 
     if (user) {
@@ -40,17 +46,18 @@ function LoginForm() {
     setLoading(true);
 
     try {
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (signInError) throw signInError;
+      if (error) {
+        throw error;
+      }
 
-      // Auth state change listener in AuthContext will handle the redirect
-    } catch (error) {
-      console.error('Login error:', error);
-      setError('Giriş yapılırken bir hata oluştu. Lütfen bilgilerinizi kontrol edin.');
+      router.push('/');
+    } catch (error: any) {
+      setToast({ message: error.message, type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -59,6 +66,15 @@ function LoginForm() {
   return (
     <div className="min-h-screen flex justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
+        {toast && (
+          <div
+            className={`p-4 rounded-md flex items-center justify-center ${toast.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
+              }`}
+            role="alert"
+          >
+            <p className="text-sm font-medium">{toast.message}</p>
+          </div>
+        )}
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Hesabınıza Giriş Yapın
@@ -70,15 +86,8 @@ function LoginForm() {
             </Link>
           </p>
         </div>
-        
         <div className="bg-white p-8 rounded-lg shadow-sm">
           <form className="space-y-6" onSubmit={handleLogin}>
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md text-sm">
-                {error}
-              </div>
-            )}
-            
             <Input
               id="email"
               name="email"
@@ -87,10 +96,9 @@ function LoginForm() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="E-posta adresiniz"
+              placeholder="E-posta adresi"
               autoComplete="email"
             />
-            
             <Input
               id="password"
               name="password"
@@ -99,18 +107,28 @@ function LoginForm() {
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Şifreniz"
+              placeholder="Şifre"
               autoComplete="current-password"
             />
 
             <div>
-              <button
+              <Button
                 type="submit"
+                variant="primary"
                 disabled={loading}
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-pink-600 hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                className="w-full"
               >
                 {loading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
-              </button>
+              </Button>
+            </div>
+
+            <div className="text-sm text-center">
+              <Link
+                href="/auth/register"
+                className="font-medium text-indigo-600 hover:text-indigo-500"
+              >
+                Hesabınız yok mu? Kayıt Ol
+              </Link>
             </div>
           </form>
         </div>
