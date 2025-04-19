@@ -1,13 +1,12 @@
 'use client';
 
 import { useEffect, useState, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Link from 'next/link';
 
 function CallbackContent() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -15,29 +14,27 @@ function CallbackContent() {
 
   useEffect(() => {
     const handleCallback = async () => {
-      const token = searchParams.get('token');
-      const type = searchParams.get('type');
       const isVerification = searchParams.get('verification') === 'true';
 
-      // If this is not a verification callback, redirect to home
-      if (!token || !type || !isVerification) {
-        router.replace('/');
+      if (!isVerification) {
+        setError('Email doğrulama işlemi sırasında bir hata oluştu. Lütfen tekrar deneyin.');
+        setLoading(false);
         return;
       }
 
       try {
-        // First, get the session to ensure the token is valid
-        const { data, error: authError } = await supabase.auth.getSession();
-        if (authError) throw authError;
+        // Check initial session
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError) throw sessionError;
 
-        if (data?.session?.user) {
+        if (session?.user) {
           // Create or update user profile
           const { error: profileError } = await supabase
             .from('profiles')
             .upsert({
-              id: data.session.user.id,
-              email: data.session.user.email,
-              full_name: data.session.user.user_metadata.full_name,
+              id: session.user.id,
+              email: session.user.email,
+              full_name: session.user.user_metadata.full_name,
               updated_at: new Date().toISOString(),
             }, {
               onConflict: 'id'
@@ -46,34 +43,70 @@ function CallbackContent() {
           if (profileError) {
             console.error('Error creating profile:', profileError);
             setError('Profil oluşturulurken bir hata oluştu.');
+            setLoading(false);
             return;
           }
 
           // Sign out after profile creation
           await supabase.auth.signOut();
           setIsConfirmed(true);
+          setLoading(false);
+          return;
         }
+
+        // If no session, listen for auth state changes
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+          if (event === 'SIGNED_IN' && session?.user) {
+            // Create or update user profile
+            const { error: profileError } = await supabase
+              .from('profiles')
+              .upsert({
+                id: session.user.id,
+                email: session.user.email,
+                full_name: session.user.user_metadata.full_name,
+                updated_at: new Date().toISOString(),
+              }, {
+                onConflict: 'id'
+              });
+
+            if (profileError) {
+              console.error('Error creating profile:', profileError);
+              setError('Profil oluşturulurken bir hata oluştu.');
+              return;
+            }
+
+            // Sign out after profile creation
+            await supabase.auth.signOut();
+            setIsConfirmed(true);
+          } else if (event === 'SIGNED_OUT') {
+            setIsConfirmed(true);
+          }
+          setLoading(false);
+        });
+
+        // Set a timeout to prevent infinite loading
+        const timeout = setTimeout(() => {
+          if (loading) {
+            setError('Doğrulama işlemi zaman aşımına uğradı. Lütfen tekrar deneyin.');
+            setLoading(false);
+            subscription.unsubscribe();
+          }
+        }, 10000); // 10 seconds timeout
+
+        // Cleanup subscription and timeout
+        return () => {
+          subscription.unsubscribe();
+          clearTimeout(timeout);
+        };
       } catch (error) {
         console.error('Callback error:', error);
         setError('Bir hata oluştu. Lütfen tekrar deneyin.');
-      } finally {
         setLoading(false);
       }
     };
 
     handleCallback();
-  }, [router, searchParams]);
-
-  // Prevent any automatic redirects
-  useEffect(() => {
-    const preventRedirect = (e: BeforeUnloadEvent) => {
-      e.preventDefault();
-      e.returnValue = '';
-    };
-
-    window.addEventListener('beforeunload', preventRedirect);
-    return () => window.removeEventListener('beforeunload', preventRedirect);
-  }, []);
+  }, [searchParams, loading]);
 
   if (loading) {
     return <LoadingSpinner fullScreen />;
