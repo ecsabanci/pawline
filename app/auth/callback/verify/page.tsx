@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
+import { AuthError } from '@supabase/supabase-js';
 
 export default function VerifyPage() {
-  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -39,23 +39,24 @@ export default function VerifyPage() {
 
         // Redirect to login page with success message
         router.push('/auth/login?success=' + encodeURIComponent('Email adresiniz başarıyla doğrulandı. Lütfen giriş yapın.'));
-      } catch (error: any) {
+      } catch (error) {
         console.error('Verification error:', error);
-        router.push('/auth/login?error=' + encodeURIComponent(error.message || 'Bir hata oluştu. Lütfen tekrar deneyin.'));
+        const errorMessage = error instanceof Error || error instanceof AuthError 
+          ? error.message 
+          : 'Bir hata oluştu. Lütfen tekrar deneyin.';
+        router.push('/auth/login?error=' + encodeURIComponent(errorMessage));
       }
     };
 
     // Set a timeout to redirect if verification takes too long
     const timeoutId = setTimeout(() => {
-      if (loading) {
-        router.push('/auth/login?error=' + encodeURIComponent('Doğrulama süresi doldu. Lütfen tekrar deneyin.'));
-      }
+      router.push('/auth/login?error=' + encodeURIComponent('Doğrulama süresi doldu. Lütfen tekrar deneyin.'));
     }, 10000);
 
     handleVerification();
 
     return () => clearTimeout(timeoutId);
-  }, [supabase, router]);
+  }, [router]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">

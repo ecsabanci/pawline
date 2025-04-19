@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { AuthError } from '@supabase/supabase-js';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import Input from '@/components/ui/Input';
@@ -15,7 +16,6 @@ function LoginForm() {
   const { user } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const supabase = createClientComponentClient();
@@ -42,7 +42,6 @@ function LoginForm() {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
     setLoading(true);
 
     try {
@@ -56,8 +55,12 @@ function LoginForm() {
       }
 
       router.push('/');
-    } catch (error: any) {
-      setToast({ message: error.message, type: 'error' });
+    } catch (error) {
+      console.error('Login error:', error);
+      const errorMessage = error instanceof AuthError 
+        ? error.message 
+        : 'Giriş yapılırken bir hata oluştu. Lütfen bilgilerinizi kontrol edin.';
+      setToast({ message: errorMessage, type: 'error' });
     } finally {
       setLoading(false);
     }
