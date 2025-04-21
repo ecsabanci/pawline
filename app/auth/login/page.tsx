@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import Input from '@/components/ui/Input';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Button from '@/components/ui/Button';
+import toast, { Toaster } from 'react-hot-toast';
 
 function LoginForm() {
   const router = useRouter();
@@ -17,7 +18,6 @@ function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const supabase = createClientComponentClient();
 
   useEffect(() => {
@@ -25,9 +25,9 @@ function LoginForm() {
     const errorMessage = searchParams.get('error');
 
     if (successMessage) {
-      setToast({ message: decodeURIComponent(successMessage), type: 'success' });
+      toast.success(decodeURIComponent(successMessage));
     } else if (errorMessage) {
-      setToast({ message: decodeURIComponent(errorMessage), type: 'error' });
+      toast.error(decodeURIComponent(errorMessage));
     }
 
     if (user) {
@@ -60,7 +60,7 @@ function LoginForm() {
       const errorMessage = error instanceof AuthError 
         ? error.message 
         : 'Giriş yapılırken bir hata oluştu. Lütfen bilgilerinizi kontrol edin.';
-      setToast({ message: errorMessage, type: 'error' });
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -69,15 +69,6 @@ function LoginForm() {
   return (
     <div className="min-h-screen flex justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8">
-        {toast && (
-          <div
-            className={`p-4 rounded-md flex items-center justify-center ${toast.type === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
-              }`}
-            role="alert"
-          >
-            <p className="text-sm font-medium">{toast.message}</p>
-          </div>
-        )}
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
             Hesabınıza giriş yapın
@@ -136,6 +127,24 @@ function LoginForm() {
           </form>
         </div>
       </div>
+      <Toaster 
+        position="top-right"
+        toastOptions={{
+          success: {
+            style: {
+              background: '#10B981',
+              color: 'white',
+            },
+          },
+          error: {
+            style: {
+              background: '#EF4444',
+              color: 'white',
+            },
+          },
+          duration: 3000,
+        }}
+      />
     </div>
   );
 }
