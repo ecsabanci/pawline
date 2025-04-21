@@ -63,12 +63,12 @@ export default function Header() {
     categories.filter(cat => cat.parent_id === parentId);
 
   return (
-    <header className="bg-white shadow-md">
+    <header className="bg-white shadow-md sticky top-0 z-50">
       <nav className="container mx-auto px-4 py-4">
         <div className="flex justify-between items-center mb-4">
-          <Link href="/" className="text-xl flex items-center gap-2 font-bold text-gray-100 bg-pink-700 p-2 rounded-md">
+          <Link href="/" className="text flex items-center gap-2 font-bold text-gray-100 bg-pink-700 p-2 rounded-md">
             Pawline
-            <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#ffff"><path d="M180-475q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29Zm180-160q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29Zm240 0q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29Zm180 160q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29ZM266-75q-45 0-75.5-34.5T160-191q0-52 35.5-91t70.5-77q29-31 50-67.5t50-68.5q22-26 51-43t63-17q34 0 63 16t51 42q28 32 49.5 69t50.5 69q35 38 70.5 77t35.5 91q0 47-30.5 81.5T694-75q-54 0-107-9t-107-9q-54 0-107 9t-107 9Z" /></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" height="16px" viewBox="0 -960 960 960" width="16px" fill="#ffff"><path d="M180-475q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29Zm180-160q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29Zm240 0q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29Zm180 160q-42 0-71-29t-29-71q0-42 29-71t71-29q42 0 71 29t29 71q0 42-29 71t-71 29ZM266-75q-45 0-75.5-34.5T160-191q0-52 35.5-91t70.5-77q29-31 50-67.5t50-68.5q22-26 51-43t63-17q34 0 63 16t51 42q28 32 49.5 69t50.5 69q35 38 70.5 77t35.5 91q0 47-30.5 81.5T694-75q-54 0-107-9t-107-9q-54 0-107 9t-107 9Z" /></svg>
           </Link>
 
           <div className="flex items-center space-x-6">
@@ -85,7 +85,7 @@ export default function Header() {
             {!loading && (
               <>
                 {/* Desktop menü */}
-                <div className="hidden md:flex items-center space-x-4">
+                <div className="hidden md:flex items-center space-x-4 text-sm">
                   {user ? (
                     <>
                       {isAdmin && (
@@ -125,7 +125,7 @@ export default function Header() {
                 </div>
 
                 {/* Mobil menü */}
-                <div className="md:hidden">
+                <div className="md:hidden text-sm">
                   <Menu as="div" className="relative flex">
                     <Menu.Button className="text-gray-600 hover:text-gray-800">
                       <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#00000"><path d="M234-276q51-39 114-61.5T480-360q69 0 132 22.5T726-276q35-41 54.5-93T800-480q0-133-93.5-226.5T480-800q-133 0-226.5 93.5T160-480q0 59 19.5 111t54.5 93Zm246-164q-59 0-99.5-40.5T340-580q0-59 40.5-99.5T480-720q59 0 99.5 40.5T620-580q0 59-40.5 99.5T480-440Zm0 360q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q53 0 100-15.5t86-44.5q-39-29-86-44.5T480-280q-53 0-100 15.5T294-220q39 29 86 44.5T480-160Zm0-360q26 0 43-17t17-43q0-26-17-43t-43-17q-26 0-43 17t-17 43q0 26 17 43t43 17Zm0-60Zm0 360Z" /></svg>
@@ -215,7 +215,7 @@ export default function Header() {
             <Menu as="div" key={category.id} className="relative">
               {({ open }) => (
                 <>
-                  <Menu.Button className="text-gray-700 hover:text-pink-700 font-medium py-2 cursor-pointer inline-flex items-center">
+                  <Menu.Button className="text-gray-700 hover:text-pink-700 font-medium py-2 text-sm cursor-pointer inline-flex items-center">
                     {category.name_tr}
                     <svg
                       className={`ml-2 h-4 w-4 transform transition-transform duration-200 ${open ? 'rotate-180' : ''
@@ -250,7 +250,7 @@ export default function Header() {
                               <Link
                                 href={`/categories/${category.slug}/${subCategory.slug}`}
                                 className={`${active ? 'bg-pink-50 text-pink-700' : 'text-gray-700'
-                                  } group flex w-full items-center rounded-md px-4 py-2 text-sm transition-colors duration-150`}
+                                  } group flex w-full items-center rounded-md px-4 py-2 text-xs transition-colors duration-150`}
                               >
                                 {subCategory.name_tr}
                               </Link>

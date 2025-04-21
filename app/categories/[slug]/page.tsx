@@ -1,7 +1,7 @@
 import { createServerSupabaseClient } from '@/lib/supabase.server';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-
+import { ChevronRightIcon } from '@heroicons/react/24/outline';
 interface Props {
   params: Promise<{
     slug: string;
@@ -37,27 +37,15 @@ export default async function CategoryPage({ params }: Props) {
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Breadcrumbs */}
-      <nav className="flex mb-8" aria-label="Breadcrumb">
-        <ol className="inline-flex items-center space-x-1 md:space-x-3">
-          <li className="inline-flex items-center">
-            <Link href="/" className="text-gray-700 hover:text-pink-700">
-              Ana Sayfa
-            </Link>
-          </li>
-          <li>
-            <div className="flex items-center">
-              <svg className="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
-              </svg>
-              <span className="text-gray-500 ml-1 md:ml-2 font-medium">
-                {category.name}
-              </span>
-            </div>
-          </li>
-        </ol>
+      <nav className="flex items-center gap-1 mb-8 text-gray-600 text-sm">
+        <Link href="/" className="hover:text-primary">
+          Ana Sayfa
+        </Link>
+        <ChevronRightIcon className="w-3 h-3" />
+        <span className="text-primary">{category.name_tr}</span>
       </nav>
 
-      <h1 className="text-3xl font-bold mb-8">{category.name}</h1>
+      <h1 className="text-2xl font-bold mb-8 bg-gray-100 p-4 rounded-lg">{category.name_tr}</h1>
 
       {/* Subcategories */}
       {subcategories && subcategories.length > 0 && (
@@ -70,7 +58,7 @@ export default async function CategoryPage({ params }: Props) {
                 href={`/categories/${category.slug}/${subcategory.slug}`}
                 className="p-4 border rounded-lg hover:border-pink-500 transition-colors"
               >
-                <h3 className="font-medium text-gray-900">{subcategory.name}</h3>
+                <h3 className="font-medium text-gray-900">{subcategory.name_tr}</h3>
               </Link>
             ))}
           </div>

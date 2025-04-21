@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { createServerSupabaseClient } from '@/lib/supabase.server';
 import ProductGrid from '@/components/ProductGrid';
-
+import { ChevronRightIcon } from '@heroicons/react/24/outline';
 type SubCategoryPageProps = {
   params: Promise<{
     slug: string;
@@ -46,19 +46,19 @@ export default async function SubCategoryPage({ params }: SubCategoryPageProps) 
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Breadcrumb navigation */}
-      <nav className="flex mb-8 text-gray-600">
+      <nav className="flex items-center gap-1 mb-8 text-gray-600 text-sm">
         <Link href="/" className="hover:text-primary">
           Ana Sayfa
         </Link>
-        <span className="mx-2">/</span>
+        <ChevronRightIcon className="w-3 h-3" />
         <Link href={`/categories/${parentCategory.slug}`} className="hover:text-primary">
           {parentCategory.name_tr}
         </Link>
-        <span className="mx-2">/</span>
+        <ChevronRightIcon className="w-3 h-3" />
         <span className="text-primary">{subcategory.name_tr}</span>
       </nav>
 
-      <h1 className="text-3xl font-bold mb-8">{subcategory.name_tr}</h1>
+      <h1 className="text-2xl font-bold mb-8">{subcategory.name_tr}</h1>
 
       <ProductGrid products={products || []} />
 

@@ -40,7 +40,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       <div className="p-4 border-t border-gray-200">
         <Link
           href={`/products/${product.id}`}
-          className="block text-sm mb-2 hover:text-pink-600 transition-colors"
+          className="block text-xs mb-2 hover:text-pink-600 transition-colors"
         >
           {product.name_tr}
         </Link>
@@ -56,7 +56,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               </span>
             </>
           ) : (
-            <span className="text-lg text-green-800 font-semibold">
+            <span className="text-lg text-green-600 font-semibold">
               {originalPrice}₺
             </span>
           )}

@@ -6,6 +6,7 @@ import { removeFromCart, updateQuantity } from '@/store/features/cartSlice';
 import Image from 'next/image';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
+
 export default function CartPage() {
   const dispatch = useDispatch();
   const cartItems = useSelector((state: RootState) => state.cart.items);
@@ -18,7 +19,7 @@ export default function CartPage() {
         <p className="text-gray-600 mb-8">Sepetinizde henüz ürün bulunmuyor.</p>
         <Link
           href="/"
-          className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+          className="flex bg-gray-100 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-200 transition-colors items-center gap-2 w-fit mx-auto"
         >
           Alışverişe Başla
         </Link>

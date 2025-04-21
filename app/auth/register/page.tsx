@@ -73,10 +73,10 @@ function RegisterForm() {
       <div className="max-w-md w-full space-y-8">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Yeni Hesap Oluşturun
+            Yeni hesap oluşturun
           </h2>
           <p className="mt-2 text-center text-sm text-gray-600">
-            Veya{' '}
+            veya{' '}
             <Link href="/auth/login" className="font-medium text-pink-600 hover:text-pink-500">
               mevcut hesabınıza giriş yapın
             </Link>

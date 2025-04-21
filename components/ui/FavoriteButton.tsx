@@ -78,7 +78,7 @@ export default function FavoriteButton({ productId, className }: FavoriteButtonP
   return (
     <button
       onClick={toggleFavorite}
-      className={`transition-color cursor-pointer duration-200 disabled:opacity-50 ${className}`}
+      className={`transition-color cursor-pointer duration-200 disabled:opacity-50 hover:text-pink-700 hover:scale-105 ${className}`}
       aria-label={isFavorite ? 'Favorilerden Çıkar' : 'Favorilere Ekle'}
     >
       {isFavorite ? (
