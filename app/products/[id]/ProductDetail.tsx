@@ -1,7 +1,6 @@
 'use client';
 
 import { Product } from '@/lib/supabase';
-import { useState } from 'react';
 import AddToCartButton from '@/components/AddToCartButton';
 import FavoriteButton from '@/components/ui/FavoriteButton';
 import ImageSlider from '@/components/ui/ImageSlider';
