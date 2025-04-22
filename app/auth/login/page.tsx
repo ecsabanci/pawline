@@ -2,7 +2,7 @@
 
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { supabase } from '@/lib/supabase';
 import { AuthError } from '@supabase/supabase-js';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
@@ -17,8 +17,8 @@ function LoginForm() {
   const { user } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const supabase = createClientComponentClient();
 
   useEffect(() => {
     const successMessage = searchParams.get('success');
@@ -32,16 +32,17 @@ function LoginForm() {
 
     if (user) {
       const redirectTo = searchParams.get('redirectTo');
-      if (redirectTo) {
-        router.push(redirectTo);
-      } else {
-        router.push('/');
-      }
+      router.push(redirectTo || '/');
+
+
+
+
     }
   }, [user, router, searchParams]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(null);
     setLoading(true);
 
     try {
@@ -54,7 +55,7 @@ function LoginForm() {
         throw error;
       }
 
-      router.push('/');
+      // Auth state change listener in AuthContext will handle the redirect
     } catch (error) {
       console.error('Login error:', error);
       const errorMessage = error instanceof AuthError 
